@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <title>Device Control Panel</title>
+      <style>
+         body {
+            font-family: system-ui, sans-serif;
+            background: #f9fafb;
+            padding: 0 2rem;
+            gap: 1rem;
+         }
+
+         .button-container {
+            margin-top: 20px;
+            display: flex;
+            gap: 1rem;
+         }
+
+         .toggle {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1rem;
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            min-width: 150px;
+         }
+
+         .label {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #374151;
+         }
+
+         .toggle input {
+            display: none; /* hide checkbox */
+         }
+
+         .switch {
+            width: 85px;
+            height: 40px;
+            background: #d1d5db;
+            border-radius: 999px;
+            position: relative;
+            transition: background 0.25s ease;
+         }
+
+         .dot {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+            transition: left 0.25s ease;
+         }
+
+         /* When checkbox is checked → toggle ON */
+         .toggle input:checked + .switch {
+            background: #534bf8;
+         }
+         .toggle input:checked + .switch .dot {
+            left: 50px;
+         }
+      </style>
+   </head>
+
+   <body>
+      <div class="container">
+         <div class="title" data-device-id="<%= id %>" id="device-container">
+            <h1>Control Panel <b><%= id %></b></h1>
+         </div>
+         <% const binary = device.state.toString(2).padStart(3, "0"); %>
+         <hr />
+         <div class="button-container">
+            <label class="toggle">
+               <span class="label">Light</span>
+               <input type="checkbox" <%= binary[0] === "1" ? "checked" : "" %> />
+               <div class="switch"><div class="dot"></div></div>
+            </label>
+
+            <label class="toggle">
+               <span class="label">Fan</span>
+               <input type="checkbox" <%= binary[1] === "1" ? "checked" : "" %> />
+               <div class="switch"><div class="dot"></div></div>
+            </label>
+
+            <label class="toggle">
+               <span class="label">Heater</span>
+               <input type="checkbox" <%= binary[2] === "1" ? "checked" : "" %> />
+               <div class="switch"><div class="dot"></div></div>
+            </label>
+         </div>
+      </div>
+      <script src="/js/buttonToggles.js"></script>
+   </body>
+</html>
