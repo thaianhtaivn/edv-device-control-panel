@@ -3,6 +3,7 @@ const setupMiddleware = require('./middleware');
 const deviceRoutes = require('./deviceRoutes');
 const userRoutes = require('./userRoutes');
 
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -12,6 +13,7 @@ setupMiddleware(app);
 // Register routes
 app.use('/', userRoutes);
 app.use('/', deviceRoutes);
+
 
 // Start server
 (async () => {
