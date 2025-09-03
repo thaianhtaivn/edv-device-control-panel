@@ -3,6 +3,7 @@
    <head>
       <meta charset="UTF-8" />
       <title>Device Control Panel</title>
+      <link rel="stylesheet" href="/style.css" />
       <style>
          body {
             font-family: system-ui, sans-serif;
@@ -101,6 +102,9 @@
                <input type="checkbox" <%= binary[2] === "1" ? "checked" : "" %> />
                <div class="switch"><div class="dot"></div></div>
             </label>
+         </div>
+         <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 3rem"></div>
+            <a href="/device/details/<%= id %>">Device details →</a> 
          </div>
       </div>
       <script src="/js/buttonToggles.js"></script>

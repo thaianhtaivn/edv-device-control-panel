@@ -27,24 +27,6 @@ router.post("/api/v1/device/register", (req, res) => {
       return res.status(200).json({ success: true, message: "Device registered successfully.", device_data });
 });
 
-router.post("/api/v1/device/update/:id", (req, res) => {
-      const { id } = req.params;
-      const inputData = req.body;
-
-      const date = Date.now();
-      const updateData = {
-            lastUpdated: date,
-            status: "Online",
-            signal: inputData.sg || "0",
-            relayStates: inputData.rl || 0
-      };
-
-      if ('name' in inputData) updateData.name = inputData.name;
-
-      saveDeviceId(id, updateData);
-      res.json({ message: "Device updated successfully." });
-});
-
 router.post("/api/v1/device/toggle", (req, res) => {
       const { id, state } = req.body;
 
@@ -58,6 +40,22 @@ router.post("/api/v1/device/toggle", (req, res) => {
 
       saveDeviceId(id, device_data);
       return res.status(200).json({ success: true, message: "Device state updated successfully.", device_data });
+});
+
+router.post("/api/v1/device/update", async (req, res) => {
+      const { id, field, value } = req.body;
+      console.log(field);
+
+      if (!id || !field) return res.status(400).json({ success: false, message: "Device ID and field are required." });
+
+      const date = Date.now();
+      const updateData = {
+            lastUpdated: date
+      };
+      updateData[field] = value;
+
+      saveDeviceId(id, updateData);
+      return res.status(200).json({ success: true, message: "Device field updated successfully.", updateData });
 });
 
 router.get('/device/details/:id', async (req, res) => {
