@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <title><%= device.name %> Details</title>
+      <link rel="stylesheet" href="/style.css" />
+      <style>
+         body {
+            font-family: sans-serif;
+            padding: 2rem;
+            background: #f9f9f9;
+         }
+         .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+         }
+         h2 {
+            margin-top: -1rem;
+         }
+         .device-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            font-size: 1rem;
+         }
+
+         .detail-item {
+            display: flex;
+            align-items: center;
+         }
+
+         .label {
+            font-weight: 600;
+            color: #444;
+            min-width: 150px;
+         }
+
+         .delete-button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+         }
+         .save-button {
+            background-color: #2da33d;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            width: fit-content;
+            margin: auto;
+         }
+
+         .h1-style {
+            font-size: 2em;
+            font-weight: bold;
+            border: none;
+            outline: none;
+            text-align: center;
+         }
+         .input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem; /* Optional: adds space between rows */
+         }
+      </style>
+   </head>
+   <body>
+      <div class="container">
+         <div id="device-container" class="input-container" data-device-id="<%= id %>">
+            <input class="h1-style" value="<%= device.name %>" id="deviceNameInput" />
+            <button type="button" id="saveButton" class="save-button">Save</button>
+         </div>
+         <div class="device-detail">
+            <div class="detail-item">
+               <span class="label">ID:</span>
+               <span class="value"><%= id %></span>
+            </div>
+            <div class="detail-item">
+               <span class="label">Status:</span>
+               <span class="value"><%= device.status || 'Unknown' %></span>
+            </div>
+            <div class="detail-item">
+               <span class="label">Signal:</span>
+               <span class="value"><%= device.signal ?? 'N/A' %> dBm</span>
+            </div>
+            <div class="detail-item">
+               <span class="label">WiFi SSID:</span>
+               <span class="value"><%= device.wifiSSID %></span>
+            </div>
+            <div class="detail-item">
+               <span class="label">IP Address:</span>
+               <span class="value"><%= device.ipAddress %></span>
+            </div>
+            <div class="detail-item">
+               <span class="label">Gateway:</span>
+               <span class="value"><%= device.gateway %></span>
+            </div>
+            <div class="detail-item">
+               <span class="label">Subnet Mask:</span>
+               <span class="value"><%= device.subnetMask %></span>
+            </div>
+            <div class="detail-item">
+               <span class="label">MAC Address:</span>
+               <span class="value"><%= device.mac %></span>
+            </div>
+            <div class="detail-item">
+               <span class="label">Last Online:</span>
+               <span class="value"><%= new Date(device.lastUpdated).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) %></span>
+            </div>
+            <div class="detail-item">
+               <span class="label">Firmware Version:</span>
+               <span class="value"><%= device.firmwareVersion %></span>
+            </div>
+         </div>
+         <br />
+         <hr />
+         <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 1rem">
+            <a href="/">← Back to device list</a>
+            <button id="deleteButton" class="delete-button">Delete</button>
+         </div>
+      </div>
+      <script src="/js/editDevice.js"></script>
+   </body>
+</html>

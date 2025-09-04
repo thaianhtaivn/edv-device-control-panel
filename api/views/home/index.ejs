@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <title>Device Dashboard</title>
+      <link rel="stylesheet" href="/style.css" />
+      <style>
+         body {
+            font-family: sans-serif;
+            margin: 0 2rem;
+            background: #f5f5f5;
+         }
+         table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+         }
+         th,
+         td {
+            border: 1px solid #ccc;
+            font-size: 1.2rem;
+            padding: 0.65rem;
+            text-align: left;
+         }
+         th {
+            background: #eee;
+         }
+         .online {
+            color: green;
+            font-weight: bold;
+         }
+         .offline {
+            color: red;
+            font-weight: bold;
+         }
+         .logout-button {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: #e74c3c; /* red-ish */
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            max-width: fit-content;
+            transition: background 0.2s ease;
+         }
+
+         .logout-button:hover {
+            background-color: #c0392b;
+         }
+
+         .device-link {
+            color: #002ec5;
+            text-decoration: none;
+         }
+
+         .device-link:hover {
+            text-decoration: underline;
+            color: #3498db;
+         }
+      </style>
+   </head>
+   <body>
+      <div style="display: flex; justify-content: space-between; align-items: center">
+         <h1 style="flex: 2">Device Dashboard <%= firmwareVersion %></h1>
+         <a href="/logout" class="logout-button" style="flex: 1; text-align: center">Logout</a>
+      </div>
+      <table>
+         <thead>
+            <tr>
+               <th>ID</th>
+               <th>Name</th>
+               <th>IP Address</th>
+               <th>MAC Address</th>
+               <th>Firmware</th>
+               <th>Signal</th>
+               <th>Status</th>
+            </tr>
+         </thead>
+         <tbody>
+            <% for (let id in devices) { const device = devices[id]; %>
+            <tr>
+               <td>
+                  <a href="/device/<%= id %>" class="device-link"><%= id%></a>
+               </td>
+               <td><%= device.name %></td>
+               <td><%= device.ipAddress %></td>
+               <td><%= device.mac %></td>
+               <td><%= device.firmwareVersion %></td>
+               <td><%= device.signal %></td>
+               <td class="<%= device.status ? device.status.toLowerCase() : 'unknown' %>"><%= device.status || 'Unknown' %></td>
+            </tr>
+            <% } %>
+         </tbody>
+      </table>
+   </body>
+</html>

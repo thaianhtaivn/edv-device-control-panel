@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <title><%= device.name %> Details</title>
+      <style>
+         body {
+            font-family: sans-serif;
+            padding: 2rem;
+            background: #f9f9f9;
+         }
+         .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+         }
+         h2 {
+            margin-top: 0;
+         }
+         .detail-item {
+            margin: 1rem 0;
+         }
+         .label {
+            font-weight: bold;
+            color: #555;
+         }
+         .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            color: #3498db;
+            text-decoration: none;
+         }
+         .detail-item {
+            margin-bottom: 1rem;
+         }
+         .detail-item input {
+            width: 95%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border 0.2s;
+         }
+         .detail-item input:focus {
+            border-color: #4a90e2;
+            outline: none;
+         }
+      </style>
+   </head>
+   <body>
+      <div class="container">
+         <h2><%= device.name %></h2>
+         <div class="device-detail">
+            <div class="detail-item">
+               <span class="label">ID:</span>
+               <span class="value"><%= id %></span>
+            </div>
+            <div class="detail-item">
+               <span class="label">Status:</span>
+               <span class="value"><%= device.status || 'Unknown' %></span>
+            </div>
+            <div class="detail-item">
+               <span class="label">Signal:</span>
+               <span class="value"><%= device.signal ?? 'N/A' %> dBm</span>
+            </div>
+            <div class="detail-item">
+               <span class="label">Firmware Version:</span>
+               <span class="value"><%= device.firmwareVersion %></span>
+            </div>
+            <div class="detail-item">
+               <span class="label">MAC Address:</span>
+               <span class="value"><%= device.mac %></span>
+            </div>
+            <div class="detail-item">
+               <span class="label">IP Address:</span>
+               <span class="value"><%= device.ipAddress %></span>
+            </div>
+            <div class="detail-item">
+               <span class="label">Gateway:</span>
+               <span class="value"><%= device.gateway %></span>
+            </div>
+            <div class="detail-item">
+               <span class="label">Subnet Mask:</span>
+               <span class="value"><%= device.subnetMask %></span>
+            </div>
+            <div class="detail-item">
+               <span class="label">WiFi SSID:</span>
+               <span class="value"><%= device.wifiSSID %></span>
+            </div>
+            <div class="detail-item">
+               <span class="label">WiFi Pass:</span>
+               <span class="value"><%= device.wifiPass %></span>
+            </div>
+         </div>
+         <hr />
+         <h2>Update Network Settings</h3>
+         <form action="/device/<%= id %>/update" method="POST">
+            <div class="detail-item">
+               <label class="label">Wi-Fi SSID</label><br />
+               <input type="text" name="ssid" placeholder="SSID" required style="width: 100%; padding: 8px" />
+            </div>
+            <div class="detail-item">
+               <label class="label">Wi-Fi Password</label><br />
+               <input type="password" name="password" placeholder="Password" required style="width: 100%; padding: 8px" />
+            </div>
+            <div class="detail-item">
+               <label class="label">IP Address</label><br />
+               <input type="text" name="ip" placeholder="192.168.x.x" required style="width: 100%; padding: 8px" />
+            </div>
+            <div class="detail-item">
+               <label class="label">Gateway</label><br />
+               <input type="text" name="gateway" placeholder="192.168.x.1" required style="width: 100%; padding: 8px" />
+            </div>
+            <div class="detail-item">
+               <label class="label">Subnet Mask</label><br />
+               <input type="text" name="subnet" placeholder="255.255.255.0" required style="width: 100%; padding: 8px" />
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 1rem">
+               <button type="submit" style="padding: 10px 20px; background: #27ae60; color: white; border: none; border-radius: 6px">
+                  Save Settings
+               </button>
+               <a href="/" class="back-link" style="color: #e67e22; text-decoration: none; font-weight: bold">← Back to device list</a>
+            </div>
+         </form>
+      </div>
+   </body>
+</html>
