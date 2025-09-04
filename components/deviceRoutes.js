@@ -8,8 +8,8 @@ const router = express.Router();
  * @swagger
  * /device/{id}:
  *   get:
- *     summary: Get device control panel
- *     tags: [Devices]
+ *     summary: Get device information for control panel view
+ *     tags: [Device UI]
  *     parameters:
  *       - in: path
  *         name: id
@@ -36,7 +36,7 @@ router.get('/device/:id', async (req, res) => {
  * /device/details/{id}:
  *   get:
  *     summary: Get device details
- *     tags: [Devices]
+ *     tags: [Device UI]
  *     parameters:
  *       - in: path
  *         name: id
@@ -65,7 +65,7 @@ router.get('/device/details/:id', async (req, res) => {
  * /api/v1/device/register:
  *   post:
  *     summary: Register a new device
- *     tags: [Devices]
+ *     tags: [Devices API]
  *     requestBody:
  *       required: true
  *       content:
@@ -129,7 +129,7 @@ router.post("/api/v1/device/register", (req, res) => {
  * /api/v1/device/update:
  *   post:
  *     summary: Update a specific field of a device
- *     tags: [Devices]
+ *     tags: [Devices API]
  *     requestBody:
  *       required: true
  *       content:
@@ -152,7 +152,6 @@ router.post("/api/v1/device/register", (req, res) => {
 
 router.post("/api/v1/device/update", async (req, res) => {
       const { id, field, value } = req.body;
-      console.log(field);
 
       if (!id || !field) return res.status(400).json({ success: false, message: "Device ID and field are required." });
 
@@ -171,7 +170,7 @@ router.post("/api/v1/device/update", async (req, res) => {
  * /api/v1/device/toggle:
  *   post:
  *     summary: Toggle device state
- *     tags: [Devices]
+ *     tags: [Devices API]
  *     requestBody:
  *       required: true
  *       content:
@@ -205,5 +204,34 @@ router.post("/api/v1/device/toggle", (req, res) => {
 });
 
 
+/**
+ * @swagger
+ * /api/v1/device/info/{id}:
+ *   get:
+ *     summary: Get device information by ID
+ *     tags: [Devices API]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Device info retrieved successfully 
+ *       404:
+ *         description: Device not found 
+ */
+
+router.get("/api/v1/device/info/:id", async (req, res) => {
+      const deviceId = req.params.id;
+      const device = await getDeviceId(deviceId);
+
+      if (!device) {
+            return res.status(404).json({ success: false, message: "Device not found." });
+      }
+
+      return res.status(200).json({ success: true, device });
+});
 
 module.exports = router;

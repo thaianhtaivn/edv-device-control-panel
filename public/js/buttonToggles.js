@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
                   if (!res.ok) throw new Error(`HTTP ${res.status}`);
                   const data = await res.json().catch(() => ({}));
-                  console.log("Toggle sent:", { id, state, data });
             } catch (e) {
                   console.error("Failed:", e);
             }

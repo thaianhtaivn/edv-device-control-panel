@@ -5,7 +5,6 @@ const helmet = require('helmet');
 const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swaggerSpec');
-console.log(path.join(__dirname, '../components/views'));
 
 function setupMiddleware(app) {
       app.use(cors());
