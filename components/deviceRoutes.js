@@ -1,6 +1,6 @@
 const express = require('express');
 const axios = require('axios');
-const { saveDeviceId, getDeviceId } = require('../components/firebaseService');
+const { saveDeviceId, getDeviceId } = require('./firebaseService');
 const router = express.Router();
 
 
