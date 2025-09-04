@@ -1,8 +1,8 @@
 const express = require('express');
 const serverless = require("serverless-http");
-const setupMiddleware = require('./middleware');
-const deviceRoutes = require('./deviceRoutes');
-const userRoutes = require('./userRoutes');
+const setupMiddleware = require('../components/middleware');
+const deviceRoutes = require('../components/deviceRoutes');
+const userRoutes = require('../components/userRoutes');
 
 
 const app = express();
