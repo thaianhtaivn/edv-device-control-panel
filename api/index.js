@@ -1,9 +1,8 @@
 const express = require('express');
 const serverless = require("serverless-http");
-const setupMiddleware = require('./components/middleware');
-const deviceRoutes = require('./components/deviceRoutes');
-const userRoutes = require('./components/userRoutes');
-
+const setupMiddleware = require('../components/middleware');
+const deviceRoutes = require('../components/deviceRoutes');
+const userRoutes = require('../components/userRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,7 +14,6 @@ setupMiddleware(app);
 app.use('/', userRoutes);
 app.use('/', deviceRoutes);
 
-
 // Start server
 (async () => {
       app.listen(PORT, () => {
@@ -23,4 +21,4 @@ app.use('/', deviceRoutes);
       });
 })();
 
-module.exports = serverless(app);
+module.exports = app;
