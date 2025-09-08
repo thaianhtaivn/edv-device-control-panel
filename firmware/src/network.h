@@ -83,10 +83,11 @@ void setupWiFi() {
 
     client.setInsecure();
 
-    setupOTA(deviceID.c_str());
-
     mqttClient.setServer(mqtt_server, mqtt_port);
     mqttClient.setCallback(callback);
+    connectMQTT();
+
+    setupOTA(deviceID.c_str());
 }
 
 void performOTAUpdate(String firmwareLatestVersion = "1.0.0") {

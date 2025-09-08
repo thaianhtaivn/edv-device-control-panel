@@ -102,7 +102,7 @@ router.get('/device/details/:id', async (req, res) => {
  */
 
 router.post("/api/v1/device/register", (req, res) => {
-      const { id, fw, ma, ip, si, pa, gw, sm, sg, pt, st } = req.body;
+      const { id, fw, ma, ip, si, pa, gw, sm, sg, pt, st, se } = req.body;
       if (!id) return res.status(400).json({ success: false, message: "Device ID is required." });
 
       const date = Date.now();
