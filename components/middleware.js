@@ -22,6 +22,8 @@ const options = {
       reconnectPeriod: 3000
 };
 
+let clients = []; // all SSE connections
+
 function setupMiddleware(app) {
       app.use(cors());
       app.use(helmet());
@@ -61,14 +63,34 @@ function setupMiddleware(app) {
             if (process.env.NODE_ENV === 'local') {
                   console.log(`📩 [${topic}]: ${message.toString()}`);
             }
-            const device = topic.split('/')[0]; // Assuming topic format: deviceId/...
+            const deviceId = topic.split('/')[0]; // Assuming topic format: deviceId/...
             // TODO: Emit via WebSocket, store to DB, trigger logic, etc.
             const date = Date.now();
             const updateData = { lastUpdated: date };
             updateData['state'] = parseInt(message.toString()) || 0;
 
-            saveDeviceId(device, updateData);
+            saveDeviceId(deviceId, updateData);
+
+            // Broadcast update to all clients
+            clients.forEach(res => {
+                  res.write(`data: ${JSON.stringify({ deviceId, state: parseInt(message.toString()) || 0 })}\n\n`);
+            });
       });
+
+      // SSE route (same for all devices)
+      app.get("/events", (req, res) => {
+            res.setHeader("Content-Type", "text/event-stream");
+            res.setHeader("Cache-Control", "no-cache");
+            res.setHeader("Connection", "keep-alive");
+            res.flushHeaders();
+
+            clients.push(res);
+
+            req.on("close", () => {
+                  clients = clients.filter(c => c !== res);
+            });
+      });
+
 }
 
 

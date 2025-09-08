@@ -25,7 +25,7 @@ void setup() {
 void loop() {
     unsigned long currentMillis = millis();
     if (!mqttClient.connected()) {
-        reconnectMQTT();
+        connectMQTT();
     }
     mqttClient.loop();
 
