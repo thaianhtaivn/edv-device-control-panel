@@ -117,6 +117,7 @@ router.post("/api/v1/device/register", (req, res) => {
             signal: sg || "0",
             devicePort: pt || "",
             status: st || "Online",
+            state: se || 0,
             lastUpdated: date,
       };
 
@@ -190,6 +191,8 @@ router.post("/api/v1/device/update", async (req, res) => {
 
 router.post("/api/v1/device/toggle", (req, res) => {
       const { id, state } = req.body;
+      console.log("Toggle request received:", { id, state });
+
 
       if (!id) return res.status(400).json({ success: false, message: "Device ID is required." });
 
@@ -200,6 +203,25 @@ router.post("/api/v1/device/toggle", (req, res) => {
       };
 
       saveDeviceId(id, device_data);
+
+      // Publish to MQTT
+      try {
+            const mqttClient = req.app.locals.mqttClient;
+            const topic = `${id}/command`;  // e.g., "esp8266-abc123/command"
+            const message = device_data.state.toString();
+
+            // Publish to MQTT
+            mqttClient.publish(topic, message, { qos: 1, retain: false }, (err) => {
+                  if (err) {
+                        console.error(`MQTT publish error: ${err.message}`);
+                  } else {
+                        console.log(`📤 Published to ${topic}: ${message}`);
+                  }
+            });
+      } catch (error) {
+            console.error("Error publishing to MQTT:", error);
+      }
+
       return res.status(200).json({ success: true, message: "Device state updated successfully.", device_data });
 });
 
@@ -232,6 +254,11 @@ router.get("/api/v1/device/info/:id", async (req, res) => {
       }
 
       return res.status(200).json({ success: true, device });
+});
+
+
+router.get('/api/v1/ping', async (req, res) => {
+      res.status(200).json({ success: true, message: "Test endpoint is working." });
 });
 
 module.exports = router;
