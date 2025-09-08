@@ -30,4 +30,22 @@ document.addEventListener("DOMContentLoaded", function () {
                   });
             });
       }
+
+
+      // Open SSE connection
+      const evtSource = new EventSource("/events");
+      const checkboxes = document.querySelectorAll(".button-container input[type='checkbox']");
+
+      evtSource.onmessage = (event) => {
+            const { deviceId: id, state } = JSON.parse(event.data);
+
+            // Only update if this message is for my device
+            if (id !== deviceId) return;
+
+            const binary = state.toString(2).padStart(3, "0");
+            checkboxes[0].checked = binary[0] === "1"; // Light
+            checkboxes[1].checked = binary[1] === "1"; // Fan
+            checkboxes[2].checked = binary[2] === "1"; // Heater
+      };
 });
+
