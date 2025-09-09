@@ -1,7 +1,7 @@
 #ifndef _NETWORK_H
 #define _NETWORK_H
 
-const char* current_version = "1.0.2";
+const char* current_version = "1.0.3";
 const char* OTA_TOKEN = "edv@token2025";
 
 // WiFi credentials
