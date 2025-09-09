@@ -3,131 +3,242 @@
    <head>
       <meta charset="UTF-8" />
       <title><%= device.name %> Details</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
       <link rel="stylesheet" href="/style.css" />
       <style>
-         body {
-            font-family: sans-serif;
-            padding: 2rem;
-            background: #f9f9f9;
+         :root {
+            --bg: #f9f9f9;
+            --card: #fff;
+            --bd: #e5e7eb;
+            --text: #111827;
+            --muted: #6b7280;
+            --brand: #534bf8;
+            --danger: #e74c3c;
+            --success: #2da33d;
          }
+
+         body {
+            font-family: system-ui, sans-serif;
+            padding: 2rem;
+            background: var(--bg);
+            color: var(--text);
+         }
+
          .container {
-            background: white;
+            background: var(--card);
             padding: 2rem;
             border-radius: 12px;
-            max-width: 600px;
+            max-width: 720px;
             margin: auto;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
          }
+
          h2 {
             margin-top: -1rem;
          }
+
+         .input-container {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 0.75rem 1rem;
+         }
+         .h1-style {
+            font-size: 2rem;
+            font-weight: 700;
+            width: 100%;
+            background: transparent;
+            cursor: text;
+
+            border: none; /* no box border */
+            border-bottom: 1px solid #e5e7eb; /* subtle baseline */
+            outline: none; /* remove default outline */
+            text-align: left;
+
+            transition: border-color 0.2s ease;
+         }
+         .h1-style:focus,
+         .h1-style:focus-visible {
+            border-bottom-color: var(--muted); /* highlight only the bottom */
+         }
+
+         .save-button {
+            background-color: var(--success);
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            max-height: 35px;
+         }
+
          .device-detail {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            margin-top: 1rem;
-            font-size: 1rem;
+            margin-top: 1.25rem;
+            font-size: 0.95rem;
+            border-top: 1px solid var(--bd);
          }
 
          .detail-item {
-            display: flex;
+            display: grid;
+            grid-template-columns: max-content 1fr; /* label hugs content, value takes the rest */
+            column-gap: 1rem;
+            row-gap: 0.25rem;
             align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed #eee;
+         }
+
+         .detail-item:last-child {
+            border-bottom: 0;
          }
 
          .label {
             font-weight: 600;
             color: #444;
-            min-width: 150px;
+            white-space: nowrap;
+         }
+
+         .value {
+            text-align: right;
+            color: var(--text);
+            word-break: break-word;
+         }
+
+         /* Optional status pill */
+         .status-pill {
+            display: inline-block;
+            padding: 0.15rem 0.6rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            background: #eee;
+         }
+         .status-pill.online {
+            background: #e8f7ee;
+            color: #1b7f3a;
+         }
+         .status-pill.offline {
+            background: #ffe8e6;
+            color: #c0392b;
+         }
+         .status-pill.unknown {
+            background: #f3f4f6;
+            color: #4b5563;
+         }
+
+         .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
          }
 
          .delete-button {
-            background-color: #e74c3c;
+            background-color: var(--danger);
             color: white;
             border: none;
             padding: 0.5rem 1rem;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-         }
-         .save-button {
-            background-color: #2da33d;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            width: fit-content;
-            margin: auto;
          }
 
-         .h1-style {
-            font-size: 2em;
-            font-weight: bold;
-            border: none;
-            outline: none;
-            text-align: center;
-         }
-         .input-container {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem; /* Optional: adds space between rows */
+         /* ---------- Mobile (≤ 640px) ---------- */
+         @media (max-width: 640px) {
+            body {
+               padding: 1rem;
+            }
+            .container {
+               padding: 1rem;
+            }
+
+            .h1-style {
+               font-size: clamp(1.4rem, 6vw, 2rem);
+            }
+
+            .actions {
+               flex-direction: column-reverse; /* Delete under the link */
+               align-items: stretch;
+            }
+            .actions a {
+               text-align: center;
+            }
+            .delete-button {
+               width: fit-content;
+               align-self: self-end;
+            }
          }
       </style>
    </head>
    <body>
       <div class="container">
          <div id="device-container" class="input-container" data-device-id="<%= id %>">
-            <input class="h1-style" value="<%= device.name %>" id="deviceNameInput" />
+            <input class="h1-style" value="<%= device.name %>" id="deviceNameInput" autofocus type="text" />
             <button type="button" id="saveButton" class="save-button">Save</button>
          </div>
+
          <div class="device-detail">
             <div class="detail-item">
                <span class="label">ID:</span>
                <span class="value"><%= id %></span>
             </div>
+
+            <% const statusClass = device.status ? device.status.toLowerCase() : 'unknown'; %>
             <div class="detail-item">
                <span class="label">Status:</span>
-               <span class="value"><%= device.status || 'Unknown' %></span>
+               <span class="value">
+                  <span class="status-pill <%= statusClass %>"><%= device.status || 'Unknown' %></span>
+               </span>
             </div>
+
             <div class="detail-item">
                <span class="label">Signal:</span>
                <span class="value"><%= device.signal ?? 'N/A' %> dBm</span>
             </div>
+
             <div class="detail-item">
                <span class="label">WiFi SSID:</span>
                <span class="value"><%= device.wifiSSID %></span>
             </div>
+
             <div class="detail-item">
                <span class="label">IP Address:</span>
                <span class="value"><%= device.ipAddress %></span>
             </div>
+
             <div class="detail-item">
                <span class="label">Gateway:</span>
                <span class="value"><%= device.gateway %></span>
             </div>
+
             <div class="detail-item">
                <span class="label">Subnet Mask:</span>
                <span class="value"><%= device.subnetMask %></span>
             </div>
+
             <div class="detail-item">
                <span class="label">MAC Address:</span>
                <span class="value"><%= device.mac %></span>
             </div>
+
             <div class="detail-item">
                <span class="label">Last Online:</span>
-               <span class="value"><%= new Date(device.lastUpdated).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) %></span>
+               <span class="value"> <%= new Date(device.lastUpdated).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) %> </span>
             </div>
+
             <div class="detail-item">
                <span class="label">Firmware Version:</span>
                <span class="value"><%= device.firmwareVersion %></span>
             </div>
          </div>
-         <br />
+
          <hr />
-         <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 1rem">
+
+         <div class="actions">
             <a href="/">← Back to device list</a>
             <button id="deleteButton" class="delete-button">Delete</button>
          </div>
       </div>
+
       <script src="/js/editDevice.js"></script>
    </body>
 </html>
