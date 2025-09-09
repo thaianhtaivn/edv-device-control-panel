@@ -1,7 +1,7 @@
 #ifndef _NETWORK_H
 #define _NETWORK_H
 
-const char* current_version = "1.0.1";
+const char* current_version = "1.0.2";
 const char* OTA_TOKEN = "edv@token2025";
 
 // WiFi credentials
@@ -179,7 +179,7 @@ void registerDevice() {
     device_data["gw"] = WiFi.gatewayIP().toString();   // Gateway IP address
     device_data["sm"] = WiFi.subnetMask().toString();  // Subnet mask
     device_data["sg"] = getRSSI();                     // Signal strength
-    device_data["pt"] = "device_port";                 // Device port
+    device_data["pt"] = "8001";                        // Device port
 
     String payload;
     serializeJson(device_data, payload);

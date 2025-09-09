@@ -3,6 +3,7 @@
    <head>
       <meta charset="UTF-8" />
       <title>Device Dashboard</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
       <link rel="stylesheet" href="/style.css" />
       <style>
          body {
@@ -36,7 +37,7 @@
          .logout-button {
             display: inline-block;
             padding: 0.5rem 1rem;
-            background-color: #e74c3c; /* red-ish */
+            background-color: #e74c3c;
             color: white;
             text-decoration: none;
             border-radius: 6px;
@@ -44,51 +45,111 @@
             max-width: fit-content;
             transition: background 0.2s ease;
          }
-
          .logout-button:hover {
             background-color: #c0392b;
          }
-
          .device-link {
             color: #002ec5;
             text-decoration: none;
          }
-
          .device-link:hover {
             text-decoration: underline;
             color: #3498db;
          }
+
+         /* Optional: nicer status pill on all sizes */
+         .status-pill {
+            display: inline-block;
+            padding: 0.15rem 0.55rem;
+            border-radius: 999px;
+            font-size: 0.95rem;
+            background: #eee;
+         }
+         .status-pill.online {
+            background: #e8f7ee;
+            color: #1b7f3a;
+         }
+         .status-pill.offline {
+            background: #ffe8e6;
+            color: #c0392b;
+         }
+         .status-pill.unknown {
+            background: #eee;
+            color: #555;
+         }
+
+         /* --- Mobile View --- */
+         @media (max-width: 768px) {
+            td {
+               border: none;
+               display: flex;
+               justify-content: space-between;
+               align-items: center;
+               padding: 0.5rem 0;
+               font-size: 1rem;
+               gap: 1rem;
+            }
+
+            td::before {
+               content: attr(data-label);
+               font-weight: 600;
+               color: #333;
+               flex-basis: 40%;
+               max-width: 50%;
+            }
+
+            /* ensure values look consistent */
+            td span,
+            td a,
+            td .status-pill {
+               flex: 1;
+               text-align: right;
+               font-weight: 500;
+               color: #111; /* stronger for contrast */
+            }
+
+            /* optional: make status pill centered vertically */
+            td .status-pill {
+               display: inline-block;
+               text-align: center;
+               min-width: 70px;
+            }
+         }
       </style>
    </head>
    <body>
-      <div style="display: flex; justify-content: space-between; align-items: center">
-         <h1 style="flex: 2">Device Dashboard <%= firmwareVersion %></h1>
-         <a href="/logout" class="logout-button" style="flex: 1; text-align: center">Logout</a>
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem">
+         <h1 style="flex: 2; margin: 1rem 0">Device Dashboard <%= firmwareVersion %></h1>
+         <a href="/logout" class="logout-button" style="flex: 0 0 auto; text-align: center">Logout</a>
       </div>
-      <table>
+
+      <table role="table" aria-label="Devices">
          <thead>
             <tr>
-               <th>ID</th>
-               <th>Name</th>
-               <th>IP Address</th>
-               <th>MAC Address</th>
-               <th>Firmware</th>
-               <th>Signal</th>
-               <th>Status</th>
+               <th scope="col">ID</th>
+               <th scope="col">Name</th>
+               <th scope="col">IP Address</th>
+               <th scope="col">MAC Address</th>
+               <th scope="col">Firmware</th>
+               <th scope="col">Signal</th>
+               <th scope="col">Status</th>
             </tr>
          </thead>
          <tbody>
             <% for (let id in devices) { const device = devices[id]; %>
             <tr>
-               <td>
-                  <a href="/device/<%= id %>" class="device-link"><%= id%></a>
+               <td data-label="ID">
+                  <a href="/device/<%= id %>" class="device-link"><%= id %></a>
                </td>
-               <td><%= device.name %></td>
-               <td><%= device.ipAddress %></td>
-               <td><%= device.mac %></td>
-               <td><%= device.firmwareVersion %></td>
-               <td><%= device.signal %></td>
-               <td class="<%= device.status ? device.status.toLowerCase() : 'unknown' %>"><%= device.status || 'Unknown' %></td>
+               <td data-label="Name"><span><%= device.name %></span></td>
+               <td data-label="IP Address"><span><%= device.ipAddress %></span></td>
+               <td data-label="MAC Address"><span><%= device.mac %></span></td>
+               <td data-label="Firmware"><span><%= device.firmwareVersion %></span></td>
+               <td data-label="Signal"><span><%= device.signal %></span></td>
+               <td data-label="Status">
+                  <% const statusClass = device.status ? device.status.toLowerCase() : 'unknown'; %>
+                  <span class="status-pill <%= statusClass %>"><%= device.status || 'Unknown' %></span>
+               </td>
             </tr>
             <% } %>
          </tbody>
