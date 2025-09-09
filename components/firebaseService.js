@@ -2,7 +2,7 @@ const axios = require('axios');
 
 const FIREBASE_URL = "https://esp-test-c3f00-default-rtdb.asia-southeast1.firebasedatabase.app/";
 const DEVICE_LIST_VAR = "endava_iot_test";
-const firmwareLatestVersion = '1.0.2';
+const firmwareLatestVersion = '1.0.3';
 const VALID_TOKEN = "edv@token2025";
 
 async function getDeviceId(deviceId) {

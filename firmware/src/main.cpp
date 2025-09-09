@@ -24,15 +24,16 @@ void setup() {
 
 void loop() {
     unsigned long currentMillis = millis();
-    if (!mqttClient.connected()) {
-        connectMQTT();
-    }
+
     mqttClient.loop();
 
     // --- Task 1: Blink test LED ---
     if (currentMillis - blinkMillis >= blink_interval) {
         blinkMillis = currentMillis;
         digitalWrite(LED_PIN_TEST, !digitalRead(LED_PIN_TEST));
+        if (!mqttClient.connected()) {
+            connectMQTT();
+        }
     }
 
     // --- Main Task: Touch detects ---
