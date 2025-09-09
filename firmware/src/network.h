@@ -1,7 +1,7 @@
 #ifndef _NETWORK_H
 #define _NETWORK_H
 
-const char* current_version = "1.0.3";
+const char* current_version = "1.0.4";
 const char* OTA_TOKEN = "edv@token2025";
 
 // WiFi credentials
@@ -55,7 +55,6 @@ void connectMQTT() {
         } else {
             Serial.print("failed, rc=");
             Serial.print(mqttClient.state());
-            delay(2500);
         }
     }
 }
