@@ -209,7 +209,7 @@ router.post("/api/v1/device/toggle", (req, res) => {
             const message = device_data.state.toString();
 
             // Publish to MQTT
-            mqttClient.publish(topic, message, { qos: 1, retain: false }, (err) => {
+            mqttClient.publish(topic, message, { qos: 0, retain: false }, (err) => {
                   if (err) {
                         console.error(`MQTT publish error: ${err.message}`);
                   } else {
