@@ -60,21 +60,33 @@ function setupMiddleware(app) {
       });
 
       mqttClient.on('message', (topic, message) => {
-            if (process.env.NODE_ENV === 'local') {
-                  console.log(`📩 [${topic}]: ${message.toString()}`);
+            try {
+                  if (process.env.NODE_ENV === 'local') {
+                        console.log(`📩 [${topic}]: ${message.toString()}`);
+                  }
+                  const deviceId = topic.split('/')[0]; // Assuming topic format: deviceId/...
+                  // TODO: Emit via WebSocket, store to DB, trigger logic, etc.
+                  const date = Date.now();
+                  const updateData = { lastUpdated: date };
+                  updateData['state'] = parseInt(message.toString()) || 0;
+
+                  saveDeviceId(deviceId, updateData);
+
+
+                  // Broadcast to SSE clients
+                  const data = `data: ${JSON.stringify({ deviceId, state: parseInt(message.toString()) || 0 })}\n\n`;
+                  clients.forEach(res => {
+                        try {
+                              res.write(data);
+                        } catch (e) {
+                              // remove broken connection
+                              res.end();
+                              clients.splice(clients.indexOf(res), 1);
+                        }
+                  });
+            } catch (e) {
+                  console.log("Error processing MQTT message:", e);
             }
-            const deviceId = topic.split('/')[0]; // Assuming topic format: deviceId/...
-            // TODO: Emit via WebSocket, store to DB, trigger logic, etc.
-            const date = Date.now();
-            const updateData = { lastUpdated: date };
-            updateData['state'] = parseInt(message.toString()) || 0;
-
-            saveDeviceId(deviceId, updateData);
-
-            // Broadcast update to all clients
-            clients.forEach(res => {
-                  res.write(`data: ${JSON.stringify({ deviceId, state: parseInt(message.toString()) || 0 })}\n\n`);
-            });
       });
 
       // SSE route (same for all devices)
