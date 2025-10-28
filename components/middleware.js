@@ -38,67 +38,85 @@ function setupMiddleware(app) {
       app.set('views', path.join(__dirname, '../components/views'));
       app.use(express.static(path.join(__dirname, '../public')));
 
-      // Setup Swagger UI
-      app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+      // Serve Swagger JSON spec
+      app.get('/api-docs.json', (req, res) => {
+            res.setHeader('Content-Type', 'application/json');
+            res.send(swaggerSpec);
+      });
+
+      // Setup Swagger UI - Vercel serverless compatible
+      const swaggerOptions = {
             explorer: true,
             customCss: '.swagger-ui .topbar { display: none }',
-            customSiteTitle: "IoT Device API Docs"
-      }));
+            customSiteTitle: "IoT Device API Docs",
+            swaggerOptions: {
+                  persistAuthorization: true,
+                  url: '/api-docs.json'  // Reference the JSON endpoint for better serverless compatibility
+            }
+      };
 
-      // MQTT Client Setup
+      // Swagger UI routes - serve static assets and setup page
+      app.use('/api-docs', swaggerUi.serve);
+      app.get('/api-docs', swaggerUi.setup(null, swaggerOptions));
 
-      const mqttClient = mqtt.connect(options);
-      app.locals.mqttClient = mqttClient;   // <—— make it available to routes
-      mqttClient.on('connect', () => {
-            console.log('✅ MQTT connected to HiveMQ Cloud');
+      // MQTT Client Setup - skip in serverless/Vercel environment
+      if (process.env.VERCEL !== '1') {
+            const mqttClient = mqtt.connect(options);
+            app.locals.mqttClient = mqttClient;   // <—— make it available to routes
+            mqttClient.on('connect', () => {
+                  console.log('✅ MQTT connected to HiveMQ Cloud');
 
-            // Subscribe to all topics
-            mqttClient.subscribe('#', (err) => {
-                  if (err) {
-                        console.error('❌ MQTT subscribe error:', err.message);
-                  } else {
-                        console.log('📡 Subscribed to all MQTT topics (#)');
-                  }
-            });
-      });
-
-      mqttClient.on('error', (err) => {
-            console.error('🚨 MQTT error:', err.message);
-      });
-
-      mqttClient.on('reconnect', () => {
-            console.log('🔄 MQTT reconnecting...');
-      });
-
-      mqttClient.on('message', (topic, message) => {
-            try {
-                  if (process.env.NODE_ENV === 'local') {
-                        console.log(`📩 [${topic}]: ${message.toString()}`);
-                  }
-                  const deviceId = topic.split('/')[0]; // Assuming topic format: deviceId/...
-                  // TODO: Emit via WebSocket, store to DB, trigger logic, etc.
-                  const date = Date.now();
-                  const updateData = { lastUpdated: date };
-                  updateData['state'] = parseInt(message.toString()) || 0;
-
-                  saveDeviceId(deviceId, updateData);
-
-
-                  // Broadcast to SSE clients
-                  const data = `data: ${JSON.stringify({ deviceId, state: parseInt(message.toString()) || 0 })}\n\n`;
-                  clients.forEach(res => {
-                        try {
-                              res.write(data);
-                        } catch (e) {
-                              // remove broken connection
-                              res.end();
-                              clients.splice(clients.indexOf(res), 1);
+                  // Subscribe to all topics
+                  mqttClient.subscribe('#', (err) => {
+                        if (err) {
+                              console.error('❌ MQTT subscribe error:', err.message);
+                        } else {
+                              console.log('📡 Subscribed to all MQTT topics (#)');
                         }
                   });
-            } catch (e) {
-                  console.log("Error processing MQTT message:", e);
-            }
-      });
+            });
+
+            mqttClient.on('error', (err) => {
+                  console.error('🚨 MQTT error:', err.message);
+            });
+
+            mqttClient.on('reconnect', () => {
+                  console.log('🔄 MQTT reconnecting...');
+            });
+
+            mqttClient.on('message', (topic, message) => {
+                  try {
+                        if (process.env.NODE_ENV === 'local') {
+                              console.log(`📩 [${topic}]: ${message.toString()}`);
+                        }
+                        const deviceId = topic.split('/')[0]; // Assuming topic format: deviceId/...
+                        // TODO: Emit via WebSocket, store to DB, trigger logic, etc.
+                        const date = Date.now();
+                        const updateData = { lastUpdated: date };
+                        updateData['state'] = parseInt(message.toString()) || 0;
+
+                        saveDeviceId(deviceId, updateData);
+
+
+                        // Broadcast to SSE clients
+                        const data = `data: ${JSON.stringify({ deviceId, state: parseInt(message.toString()) || 0 })}\n\n`;
+                        clients.forEach(res => {
+                              try {
+                                    res.write(data);
+                              } catch (e) {
+                                    // remove broken connection
+                                    res.end();
+                                    clients.splice(clients.indexOf(res), 1);
+                              }
+                        });
+                  } catch (e) {
+                        console.log("Error processing MQTT message:", e);
+                  }
+            });
+      } else {
+            console.log('⚠️  MQTT disabled in Vercel serverless environment');
+            app.locals.mqttClient = null;  // Set to null for Vercel
+      }
 
       // SSE route (same for all devices)
       app.get("/events", (req, res) => {
