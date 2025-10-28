@@ -202,20 +202,24 @@ router.post("/api/v1/device/toggle", (req, res) => {
 
       saveDeviceId(id, device_data);
 
-      // Publish to MQTT
+      // Publish to MQTT (skip if not available in serverless)
       try {
             const mqttClient = req.app.locals.mqttClient;
-            const topic = `${id}/command`;  // e.g., "esp8266-abc123/command"
-            const message = device_data.state.toString();
+            if (mqttClient) {
+                  const topic = `${id}/command`;  // e.g., "esp8266-abc123/command"
+                  const message = device_data.state.toString();
 
-            // Publish to MQTT
-            mqttClient.publish(topic, message, { qos: 0, retain: false }, (err) => {
-                  if (err) {
-                        console.error(`MQTT publish error: ${err.message}`);
-                  } else {
-                        console.log(`📤 Published to ${topic}: ${message}`);
-                  }
-            });
+                  // Publish to MQTT
+                  mqttClient.publish(topic, message, { qos: 0, retain: false }, (err) => {
+                        if (err) {
+                              console.error(`MQTT publish error: ${err.message}`);
+                        } else {
+                              console.log(`📤 Published to ${topic}: ${message}`);
+                        }
+                  });
+            } else {
+                  console.log('⚠️  MQTT not available (serverless environment)');
+            }
       } catch (error) {
             console.error("Error publishing to MQTT:", error);
       }
