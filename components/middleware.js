@@ -26,13 +26,24 @@ let clients = []; // all SSE connections
 
 function setupMiddleware(app) {
       app.use(cors());
-      app.use(helmet());
+
+      // Configure Helmet to allow Swagger UI resources
+      app.use(helmet({
+            contentSecurityPolicy: false,  // Disable CSP to allow Swagger UI inline scripts
+      }));
+
       app.use(express.json());
       app.use(express.urlencoded({ extended: true }));
       app.set('view engine', 'ejs');
       app.set('views', path.join(__dirname, '../components/views'));
       app.use(express.static(path.join(__dirname, '../public')));
-      app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+      // Setup Swagger UI
+      app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+            explorer: true,
+            customCss: '.swagger-ui .topbar { display: none }',
+            customSiteTitle: "IoT Device API Docs"
+      }));
 
       // MQTT Client Setup
 

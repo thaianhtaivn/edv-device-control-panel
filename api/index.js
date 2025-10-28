@@ -16,11 +16,13 @@ app.use('/', userRoutes);
 app.use('/', deviceRoutes);
 app.use('/', deviceOTARoutes);
 
-// Start server
-(async () => {
+// Start server only in local development
+if (process.env.NODE_ENV !== 'production') {
       app.listen(PORT, () => {
             console.log(`Local server running on http://localhost:${PORT}`);
       });
-})();
+}
 
+// Export for both local development and Vercel serverless
 module.exports = app;
+module.exports.handler = serverless(app);
